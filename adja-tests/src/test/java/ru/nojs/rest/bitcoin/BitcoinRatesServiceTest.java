@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import ru.vdovin.rest.bitcoin.WebTargetImpl;
 
 
 public class BitcoinRatesServiceTest {
@@ -15,7 +16,7 @@ public class BitcoinRatesServiceTest {
 
     @BeforeClass
     public static void init() {
-        wt = Mockito.mock(WebTarget.class); // wt = new WebTargetImpl("https://api.bitcoinaverage.com/");
+        wt = new WebTargetImpl("https://api.bitcoinaverage.com/");
         ratesService = wt.proxy(BitcoinRatesService.class);
         /*ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target("https://api.bitcoinaverage.com/");
