@@ -46,5 +46,10 @@ public class BitcoinRatesServiceTest {
         Assert.assertNotNull("Timestamp fields is set", rubTicker.timestamp);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testFailUriGet() {
+        Ticker rubTicker = ratesService.get("NORUB");
+    }
+
 
 }

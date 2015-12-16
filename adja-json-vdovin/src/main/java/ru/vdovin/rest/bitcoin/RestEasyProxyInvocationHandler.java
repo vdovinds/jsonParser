@@ -1,6 +1,7 @@
 package ru.vdovin.rest.bitcoin;
 
 import com.google.common.base.Preconditions;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -42,13 +43,17 @@ public class RestEasyProxyInvocationHandler implements InvocationHandler {
             }
         }
 
-        if (method.isAnnotationPresent(POST.class)) {
-            //FIXME: temporarily for test
-            String request = "";
-            return rt.postForObject(uri, request, method.getReturnType(), param);
+        try {
+            if (method.isAnnotationPresent(POST.class)) {
+                //FIXME: temporarily for test
+                String request = "";
+                return rt.postForObject(uri, request, method.getReturnType(), param);
+            } else {
+                return rt.getForObject(uri, method.getReturnType(), param);
+            }
         }
-        else {
-            return rt.getForObject(uri, method.getReturnType(), param);
+        catch (HttpClientErrorException e) {
+            throw new IllegalArgumentException("Cant't get " + uri + " " + e);
         }
 
     }
