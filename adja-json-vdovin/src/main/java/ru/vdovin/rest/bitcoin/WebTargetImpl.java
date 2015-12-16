@@ -14,6 +14,6 @@ public class WebTargetImpl implements WebTarget {
 
     @Override
     public <T> T proxy(Class<T> clazz) {
-        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, new InvocationHandlerImpl(uri));
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, new RestEasyProxyInvocationHandler(uri));
     }
 }

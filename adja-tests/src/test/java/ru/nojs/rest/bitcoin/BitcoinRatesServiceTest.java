@@ -6,7 +6,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import ru.vdovin.rest.bitcoin.WebTargetImpl;
 
 
@@ -46,4 +45,6 @@ public class BitcoinRatesServiceTest {
         Assert.assertNotNull("Last fields is set", rubTicker.last);
         Assert.assertNotNull("Timestamp fields is set", rubTicker.timestamp);
     }
+
+
 }
