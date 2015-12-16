@@ -6,6 +6,9 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.nojs.vk.VkService;
+import ru.nojs.vk.VkUser;
+import ru.nojs.vk.VkUsers;
 import ru.vdovin.rest.bitcoin.WebTargetImpl;
 
 
@@ -51,5 +54,19 @@ public class BitcoinRatesServiceTest {
         Ticker rubTicker = ratesService.get("NORUB");
     }
 
+    @Test
+    public void testVkUserGet() throws Exception  {
+
+        WebTarget vkWt = new WebTargetImpl("https://api.vk.com/");
+        VkService vkService = vkWt.proxy(VkService.class);
+
+        VkUsers users = vkService.getInfo("vdovin_d_s");
+        Assert.assertNotNull("We've got users", users);
+        VkUser user = users.users().get(0);
+
+        Assert.assertTrue("First name is correct", user.getFirstName().equals("Дмитрий"));
+        Assert.assertTrue("Last name is correct", user.getLastName().equals("Вдовин"));
+
+    }
 
 }

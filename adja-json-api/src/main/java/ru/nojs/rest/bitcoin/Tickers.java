@@ -10,7 +10,6 @@ public class Tickers {
     Map<String, String> tickers = new HashMap<>();
 
     @JsonAnySetter
-    @JsonSetter
     public void add(String key, String value) {
         tickers.put(key, value);
     }
