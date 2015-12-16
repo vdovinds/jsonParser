@@ -1,13 +1,10 @@
 package ru.nojs.vk;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 
 @Produces("application/json")
 public interface VkService {
     @GET
-    @Path("/method/users.get?user_ids={userId}")
-    VkUsers getInfo(@PathParam("userId") String userId);
+    @Path("/method/users.get")
+    VkUsers getInfo(@QueryParam("user_ids") String userId);
 }

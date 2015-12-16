@@ -1,25 +1,27 @@
 package ru.vdovin.rest.bitcoin;
 
 import com.google.common.base.Preconditions;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class RestEasyProxyInvocationHandler implements InvocationHandler {
     private String uri;
-    private static final RestTemplate rt = new RestTemplate();
+    private RestTemplate rt;
 
     public RestEasyProxyInvocationHandler(String uri) {
         this.uri = uri;
+
+        rt = new RestTemplate();
+        rt.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
     @Override
@@ -34,26 +36,35 @@ public class RestEasyProxyInvocationHandler implements InvocationHandler {
             uriBuilder.path(method.getAnnotation(Path.class).value());
         }
 
-        String uri = uriBuilder.build().toUriString();
+        final int[] idx = {0};
+        List<String> pathParam = new ArrayList<>();
+        Stream.of(method.getParameters())
+                .forEach((parameter) -> {
+                    if (parameter.isAnnotationPresent(QueryParam.class))
+                        uriBuilder.queryParam(parameter.getAnnotation(QueryParam.class).value(), args[idx[0]]);
+                    if (parameter.isAnnotationPresent(PathParam.class)) {
+                        //uriBuilder.build().expand((String)args[idx[0]]); //TODO: почему-то не взлетело :(
+                        pathParam.add((String)args[idx[0]]);
+                    }
+                    idx[0]++;
+                });
 
-        Map<String, String> param = new HashMap<>();
-        for ( int i=0 ; i < method.getParameters().length; i++ ){
-            if (method.getParameters()[i].isAnnotationPresent(PathParam.class)){
-                param.put( method.getParameters()[i].getAnnotation(PathParam.class).value(), (String)args[i]);
-            }
-        }
+        String uri = uriBuilder
+                        .build()
+                        .expand(pathParam.toArray())
+                        .toUriString();
 
         try {
             if (method.isAnnotationPresent(POST.class)) {
                 //FIXME: temporarily for test
                 String request = "";
-                return rt.postForObject(uri, request, method.getReturnType(), param);
+                return rt.postForObject(uri, request, method.getReturnType());
             } else {
-                return rt.getForObject(uri, method.getReturnType(), param);
+                return rt.getForObject(uri, method.getReturnType());
             }
         }
         catch (HttpClientErrorException e) {
-            throw new IllegalArgumentException("Cant't get " + uri + " " + e);
+            throw new IllegalArgumentException("Cant't get " + uri);
         }
 
     }

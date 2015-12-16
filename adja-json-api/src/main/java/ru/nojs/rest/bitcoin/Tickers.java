@@ -1,6 +1,6 @@
 package ru.nojs.rest.bitcoin;
 
-import org.codehaus.jackson.annotate.*;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import java.util.HashMap;
 import java.util.Map;
