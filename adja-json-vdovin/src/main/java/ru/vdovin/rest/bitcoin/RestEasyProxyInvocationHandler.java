@@ -15,12 +15,10 @@ import java.util.stream.Stream;
 
 public class RestEasyProxyInvocationHandler implements InvocationHandler {
     private String uri;
-    private RestTemplate rt;
+    private final RestTemplate rt = new RestTemplate();
 
     public RestEasyProxyInvocationHandler(String uri) {
         this.uri = uri;
-
-        rt = new RestTemplate();
         rt.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
@@ -43,7 +41,6 @@ public class RestEasyProxyInvocationHandler implements InvocationHandler {
                     if (parameter.isAnnotationPresent(QueryParam.class))
                         uriBuilder.queryParam(parameter.getAnnotation(QueryParam.class).value(), args[idx[0]]);
                     if (parameter.isAnnotationPresent(PathParam.class)) {
-                        //uriBuilder.build().expand((String)args[idx[0]]); //TODO: почему-то не взлетело :(
                         pathParam.add((String)args[idx[0]]);
                     }
                     idx[0]++;
@@ -64,7 +61,7 @@ public class RestEasyProxyInvocationHandler implements InvocationHandler {
             }
         }
         catch (HttpClientErrorException e) {
-            throw new IllegalArgumentException("Cant't get " + uri);
+            throw new IllegalArgumentException("Cant't get " + uri, e);
         }
 
     }

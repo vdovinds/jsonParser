@@ -15,7 +15,7 @@
         <module>adja-tests</module>
     </modules>
 
-    <dependencyManagement>
+     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>junit</groupId>
