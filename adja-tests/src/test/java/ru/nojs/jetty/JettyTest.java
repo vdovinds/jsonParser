@@ -5,11 +5,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
+import org.springframework.web.client.RestTemplate;
 import ru.vdovin.jetty.HelloHandler;
 import ru.vdovin.jetty.HelloServlet;
 
@@ -30,7 +28,12 @@ public class JettyTest {
 
         server.setHandler(contextHelloServlet);
         server.start();
-        server.join();
+        //server.join();
+    }
+
+    @AfterClass
+    public static void stop() throws Exception {
+        server.stop();
     }
 
     @Ignore
@@ -43,7 +46,14 @@ public class JettyTest {
     }
 
     @Test
-    public void testStart() throws Exception {
+    public void testHelloServlet() throws Exception {
+
+        RestTemplate rt = new RestTemplate();
+        String s1 = rt.getForEntity("http://127.0.0.1:8080/hello", String.class).getBody();
+        String s2 = rt.getForEntity("http://127.0.0.1:8080/hello?name=test", String.class).getBody();
+
+        Assert.assertEquals("We've got response", s1, "Hello, world");
+        Assert.assertEquals("We've got response", s2, "Hello, test");
 
     }
 
